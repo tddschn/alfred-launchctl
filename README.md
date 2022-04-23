@@ -21,3 +21,9 @@ https://user-images.githubusercontent.com/45612704/164894524-0bcd2546-73c4-4238-
 - Step 2: Download the latest workflow release [here](https://github.com/tddschn/alfred-launchctl/releases/download/1.0.0/launchctl.alfredworkflow) and open it.
 
 Enjoy!
+
+## Usage
+- The default keyword trigger is `laup`
+- Press <kbd>shift</kbd> on the plist for preview
+- Supported launchctl actions: `'load', 'unload', 'reload', 'start', 'stop', 'restart', 'enable', 'disable'`, where `reload` = `unload` + `load` and `restart` = `reload` + `start`.
+    `
