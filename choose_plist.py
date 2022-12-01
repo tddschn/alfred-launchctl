@@ -11,13 +11,14 @@ from workflow.background import run_in_background, is_running
 import plistlib, argparse
 
 
-def get_plist_paths(plist_dir: Path | str = Path(
-    '~/Library/LaunchAgents').expanduser()) -> list[Path]:
+def get_plist_paths(
+    plist_dir: Path | str = Path('~/Library/LaunchAgents').expanduser(),
+) -> list[Path]:
     """
     Get a list of plist paths in a given directory.
     """
     plist_dir = Path(plist_dir).expanduser()
-    return [p for p in plist_dir.glob('*.plist')]
+    return [p for p in plist_dir.glob('*.plist') if p.exists()]
 
 
 def plist_path_to_label(plist_path: Path) -> str:
@@ -42,17 +43,14 @@ def main(wf: Workflow3):
     logger.setLevel(logging.INFO)
 
     cache_name = 'plist_paths'
-    plist_paths: list[Path] | None = wf.cached_data(cache_name,
-                                                    get_plist_paths,
-                                                    max_age=2)
+    plist_paths: list[Path] | None = wf.cached_data(
+        cache_name, get_plist_paths, max_age=2
+    )
 
     # # filtering
     query = get_query(wf)
     if query and plist_paths:
-        plist_paths = wf.filter(query,
-                                plist_paths,
-                                key=lambda x: x.name,
-                                min_score=20)
+        plist_paths = wf.filter(query, plist_paths, key=lambda x: x.name, min_score=20)
 
     # if got 0 results
     if not plist_paths:
@@ -61,11 +59,13 @@ def main(wf: Workflow3):
         return 0
 
     for plist_path in plist_paths:
-        wf.add_item(plist_path_to_label(plist_path),
-                    plist_path.name,
-                    quicklookurl=plist_path.as_uri(),
-                    arg=str(plist_path),
-                    valid=True)
+        wf.add_item(
+            plist_path_to_label(plist_path),
+            plist_path.name,
+            quicklookurl=plist_path.as_uri(),
+            arg=str(plist_path),
+            valid=True,
+        )
 
     wf.send_feedback()
 
